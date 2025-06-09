@@ -2,7 +2,6 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>114年期初工作坊 青年查詢系統</title>
   <style>
     body {
@@ -39,7 +38,7 @@
     input[type="button"]:hover {
       background-color: #0056b3;
     }
-    #order_status {
+    #result {
       text-align: left;
       margin-top: 20px;
       background-color: #fefefe;
@@ -54,6 +53,47 @@
   <div class="container">
     <h2>114年期初工作坊 青年查詢系統</h2>
     <p>請輸入「入選年度+身分證字號」（例如：112A123456789）</p>
-    <input type="text" id="uid" placeholder="請輸入查詢代碼">
-    <input type="button" value="查詢" onclick="showHint()">
-    <div id="order
+    <input type="text" id="uid" placeholder="請輸入查詢碼">
+    <input type="button" value="查詢" onclick="query()">
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function query() {
+      const uid = document.getElementById("uid").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!uid) {
+        alert("請輸入查詢碼！");
+        return;
+      }
+
+      resultDiv.innerHTML = "查詢中，請稍候...";
+
+      const url = "https://script.google.com/macros/s/AKfycbz1nyLX2L5CdIiV30uZtUqsoAY_wyrxm4islFPV9aKpX4E8sHPpuGN1yNb7JYPXGoTd/exec";
+
+      fetch(url + "?uid=" + encodeURIComponent(uid))
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            resultDiv.innerHTML = `<span style="color:red;">${data.error}</span>`;
+          } else {
+            resultDiv.innerHTML = `
+查詢結果：
+姓名：${data.name}
+年度：${data.year}
+審查類別：${data.type}
+
+委員建議內容：
+${data.suggestion}
+            `;
+          }
+        })
+        .catch(error => {
+          resultDiv.innerHTML = "查詢時發生錯誤，請稍後再試。";
+          console.error("查詢錯誤：", error);
+        });
+    }
+  </script>
+</body>
+</html>
