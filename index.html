@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>青年期初工作坊查詢系統</title>
+  <title>114年期初工作坊 青年查詢系統</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
@@ -46,6 +46,7 @@
       padding: 15px;
       border: 1px solid #ddd;
       border-radius: 5px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -65,21 +66,24 @@
         return;
       }
 
-      var url = "https://script.google.com/macros/s/AKfycbwztns-Bg53fd9H031060Sk-zsJzHzx2HmpPpJ0TWLKiJ-1p3XW7CfzNY71dKtfJdg6/exec";
+      const url = "https://script.google.com/macros/s/AKfycbyR_foMUp6yyptTD6N6Ktm8m3XKwey2mG5k1qdGtHlmmupb55-v2C_aEOgi7pA2xULQnA/exec";
 
       fetch(url + "?uid=" + encodeURIComponent(str))
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error("網路錯誤：" + response.status);
+          return response.json();
+        })
         .then(data => {
           const resultDiv = document.getElementById("order_status");
           if (data.error) {
             resultDiv.innerHTML = `<span style='color:red;'>${data.error}</span>`;
           } else {
             resultDiv.innerHTML = `
-              <b>查詢結果：</b><br>
-              姓名：${data.name}<br>
-              年度：${data.year}<br>
-              審查類別：${data.type}<br>
-              <pre>委員建議內容：\n${data.suggestion}</pre>
+<b>查詢結果：</b><br>
+姓名：${data.name}<br>
+年度：${data.year}<br>
+審查類別：${data.type}<br>
+委員建議內容：\n${data.suggestion}
             `;
           }
         })
